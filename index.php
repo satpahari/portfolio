@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hari Satpa Meila | Creative Developer</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        zinc: {
+                            850: '#1f1f22',
+                            900: '#18181b',
+                            950: '#09090b',
+                        },
+                        accent: {
+                            500: '#6366f1', // Indigo
+                            600: '#4f46e5',
+                        }
+                    },
+                    animation: {
+                        'spin-slow': 'spin 8s linear infinite',
+                        'marquee': 'marquee 25s linear infinite',
+                        'float-slow': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 5s ease-in-out 2s infinite',
+                        'float-fast': 'float 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' } /* Diubah ke -50% untuk loop sempurna */
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Styling & Scrollbar */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background-color: #3f3f46;
+        }
+
+        /* Scroll Reveal Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Dynamic Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass {
+            background: rgba(9, 9, 11, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Text Gradient Profile */
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #4f46e5, #ec4899);
+        }
+
+        /* Nav Active Indicator */
+        .nav-link.active {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        .dark .nav-link.active {
+            color: #818cf8;
+        }
+
+        /* Typing Effect Cursor */
+        .heartbeat-cursor {
+            border-right: 3px solid currentColor;
+            animation: blink 1s step-end infinite;
+            padding-right: 5px;
+        }
+        @keyframes blink {
+            0%, 100% { border-color: transparent; }
+            50% { border-color: currentColor; }
+        }
+
+        /* Hide Scrollbar for Carousel */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 transition-colors duration-500 font-sans selection:bg-accent-500 selection:text-white">
+
+    <!-- Preloader (SPA Feel) -->
+    <div id="preloader" class="fixed inset-0 z-[100] bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="w-12 h-12 border-4 border-zinc-200 dark:border-zinc-800 border-t-accent-500 rounded-full animate-spin"></div>
+        <p class="mt-4 font-display font-medium text-zinc-500 tracking-widest text-sm uppercase">Memuat Halaman</p>
+    </div>
+
+    <!-- Background Elements -->
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-accent-500/5 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-pink-500/5 blur-[120px]"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiM4MDgwODAiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_100%)]"></div>
+    </div>
+
+    <!-- Floating Navbar -->
+    <nav id="navbar" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 glass rounded-full px-6 py-3 transition-all duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] w-[95%] max-w-max flex items-center justify-between gap-8">
+        <a href="#home" class="font-display font-bold text-lg tracking-tight hover:opacity-70 transition-opacity">
+            Satpa<span class="text-accent-500">Dev.</span>
+        </a>
+        
+        <div class="hidden md:flex items-center gap-6">
+            <a href="#home" class="nav-link text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Beranda</a>
+            <a href="#about" class="nav-link text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Profil</a>
+            <a href="#projects" class="nav-link text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Karya</a>
+            <a href="#reviews" class="nav-link text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Ulasan</a>
+            <a href="#contact" class="nav-link text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Kontak</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Theme Toggle -->
+            <button id="themeToggle" class="w-8 h-8 rounded-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:scale-110 transition-transform">
+                <svg id="icon-sun" class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <svg id="icon-moon" class="w-4 h-4 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+            
+            <!-- Mobile Menu Btn -->
+            <button id="mobileMenuBtn" class="md:hidden text-zinc-600 dark:text-zinc-300">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenu" class="fixed inset-0 z-40 bg-zinc-50/95 dark:bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 opacity-0 pointer-events-none transition-opacity duration-300">
+        <button id="closeMenuBtn" class="absolute top-8 right-8 text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <a href="#home" class="mobile-link text-3xl font-display font-semibold text-zinc-900 dark:text-white">Beranda</a>
+        <a href="#about" class="mobile-link text-3xl font-display font-semibold text-zinc-900 dark:text-white">Profil & Keahlian</a>
+        <a href="#projects" class="mobile-link text-3xl font-display font-semibold text-zinc-900 dark:text-white">Karya</a>
+        <a href="#reviews" class="mobile-link text-3xl font-display font-semibold text-zinc-900 dark:text-white">Ulasan Klien</a>
+        <a href="#contact" class="mobile-link text-3xl font-display font-semibold text-zinc-900 dark:text-white">Hubungi Saya</a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10">
+        
+        <!-- Hero Section -->
+        <section id="home" class="min-h-screen flex items-center justify-center pt-24 pb-12 px-6">
+            <div class="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between gap-12 lg:gap-16">
+                
+                <!-- Kolom Kiri: Teks & Tipografi (Diperlebar ruangnya) -->
+                <div class="w-full md:w-[55%] lg:w-[60%] flex flex-col items-center md:items-start text-center md:text-left z-10 flex-shrink-0">
+                    <div class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm mb-8">
+                        <span class="relative flex h-2.5 w-2.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                        </span>
+                        <span class="text-xs font-medium text-zinc-600 dark:text-zinc-300 uppercase tracking-wider">Tersedia untuk Pekerjaan</span>
+                    </div>
+                    
+                    <!-- Menyesuaikan ukuran teks typografi dan memberi padding-bottom (pb-2) agar huruf bawah tidak terpotong -->
+                    <h1 class="reveal font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-zinc-900 dark:text-white leading-[1.1] mb-6 min-h-[110px] sm:min-h-[130px] md:min-h-[150px] lg:min-h-[170px] w-full">
+                        Membangun <br>
+                        <span class="inline-block mt-3 pb-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-gradient typing-text heartbeat-cursor"></span>
+                    </h1>
+                    
+                    <p class="reveal text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-xl mb-10 leading-relaxed">
+                        Halo, saya Hari Satpa Meila. Seorang <span class="font-medium text-zinc-900 dark:text-zinc-200">Creative Full Stack Developer</span> yang berfokus pada desain antarmuka, arsitektur backend, dan performa web yang terintegrasi dengan baik.
+                    </p>
+                    
+                    <div class="reveal flex flex-col sm:flex-row items-center gap-4">
+                        <a href="#projects" class="px-8 py-4 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium hover:scale-105 transition-transform flex items-center gap-2">
+                            Lihat Karya
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                        <a href="#contact" class="px-8 py-4 rounded-full border border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-white font-medium hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
+                            Hubungi Saya
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Avatar Pop-out & Ikon Melayang (Disesuaikan rasio ruangnya) -->
+                <!-- Diperkecil pada mode mobile (w-[75%] max-w-[280px]) agar tidak mendominasi layar -->
+                <div class="reveal w-[75%] max-w-[280px] md:max-w-md md:w-[45%] lg:w-[40%] relative z-10 mb-8 md:mb-0 mt-4 md:mt-0 flex-shrink-0">
+                    <div class="relative w-full aspect-[4/5] flex justify-center items-end">
+                        
+                        <!-- Background Bingkai (Card / Blob) -->
+                        <div class="absolute bottom-0 left-0 right-0 h-[75%] bg-gradient-to-t from-accent-500/20 via-zinc-200/50 dark:via-zinc-800/50 to-transparent border border-white dark:border-zinc-800 rounded-t-[3rem] rounded-b-[2rem] backdrop-blur-sm -z-10 shadow-2xl transition-transform duration-700 hover:rotate-1"></div>
+                        
+                        <!-- Efek Cahaya (Glow) di belakang foto -->
+                        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 w-3/4 h-1/2 bg-accent-500 rounded-full blur-[80px] opacity-30 -z-10"></div>
+
+                        <!-- Foto Avatar Pop-Out (Menembus batas atas bingkai) -->
+                        <!-- Catatan: Untuk efek terbaik, gunakan gambar PNG tanpa background -->
+                        <img src="assets/img/avatar.webp" alt="Hari Satpa Meila" class="relative w-[90%] h-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.3)] z-10 transform transition-transform duration-700 hover:scale-105 origin-bottom">
+
+                        <!-- Ikon Melayang 1: Tag Penutup HTML -->
+                        <div class="absolute top-[10%] -left-6 z-20 animate-float-slow">
+                            <div class="flex items-center justify-center w-14 h-14 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-zinc-200 dark:border-zinc-700 shadow-xl rotate-[-12deg]">
+                                <span class="font-mono font-bold text-accent-500 text-xl">&lt;/&gt;</span>
+                            </div>
+                        </div>
+
+                        <!-- Ikon Melayang 2: Kurung Kurawal CSS/JS -->
+                        <div class="absolute top-[40%] -right-8 z-20 animate-float-delayed">
+                            <div class="flex items-center justify-center w-16 h-16 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md rounded-full border border-zinc-200 dark:border-zinc-700 shadow-xl rotate-[15deg]">
+                                <span class="font-mono font-bold text-pink-500 text-2xl">{ }</span>
+                            </div>
+                        </div>
+
+                        <!-- Ikon Melayang 3: Titik Koma (Semicolon) -->
+                        <div class="absolute bottom-[20%] -left-4 z-20 animate-float-fast">
+                            <div class="flex items-center justify-center w-12 h-12 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-lg rotate-[-5deg]">
+                                <span class="font-mono font-bold text-emerald-500 text-3xl">;</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Bento Grid: About & Skills -->
+        <section id="about" class="py-24 px-6 relative">
+            <div class="max-w-6xl mx-auto">
+                <div class="reveal mb-12">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold text-zinc-900 dark:text-white mb-4">Mengenal Lebih Jauh</h2>
+                    <p class="text-zinc-500 dark:text-zinc-400">Dedikasi dalam baris kode dan estetika desain.</p>
+                </div>
+
+                <!-- Bento Grid Container -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(200px,auto)]">
+                    
+                    <!-- Box 1: Intro (Col Span 2) -->
+                    <div class="reveal md:col-span-2 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/50 p-8 flex flex-col justify-between hover:shadow-xl transition-shadow relative overflow-hidden group">
+                        <div class="absolute right-0 top-0 w-64 h-64 bg-accent-500/10 rounded-full blur-3xl group-hover:bg-accent-500/20 transition-colors"></div>
+                        <div>
+                            <svg class="w-8 h-8 text-accent-500 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                            <h3 class="text-2xl font-display font-bold text-zinc-900 dark:text-white mb-4">Filosofi Kode Saya</h3>
+                            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-xl">
+                                Berbasis di Bekasi, saya mengubah masalah kompleks menjadi desain antarmuka yang elegan dan intuitif. Pendekatan saya menggabungkan kode yang bersih (clean code) dengan interaksi animasi yang halus untuk memberikan pengalaman pengguna yang terbaik.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Box 2: Exp / Stats -->
+                    <div class="reveal rounded-3xl bg-zinc-900 dark:bg-zinc-800 p-8 flex flex-col justify-center items-center text-center relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-accent-600 to-pink-600 opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                        <h4 class="text-6xl font-display font-bold text-white mb-2 group-hover:scale-110 transition-transform">3+</h4>
+                        <p class="text-zinc-400 font-medium uppercase tracking-widest text-sm">Tahun Pengalaman</p>
+                    </div>
+
+                    <!-- Box 3: Tech Stack Marquee (Col Span 3 or 2) -->
+                    <div class="reveal md:col-span-2 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/50 p-8 flex flex-col justify-center overflow-hidden">
+                        <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-6">Stack & Peralatan</h3>
+                        
+                        <!-- Seamless Infinite Marquee -->
+                        <!-- Logika: Trek 2x lebih lebar (w-max), bergerak dari 0% ke -50% agar putarannya sempurna tanpa putus -->
+                        <div class="relative flex overflow-hidden w-full group mask-image-edges">
+                            <!-- Gradient mask untuk sisi ujung agar efek menghilang halus -->
+                            <div class="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white dark:from-zinc-900 to-transparent z-10 pointer-events-none"></div>
+                            <div class="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white dark:from-zinc-900 to-transparent z-10 pointer-events-none"></div>
+                            
+                            <!-- Trek Animasi (Hover untuk menjeda) -->
+                            <div class="flex whitespace-nowrap w-max animate-marquee group-hover:[animation-play-state:paused]">
+                                
+                                <!-- Set ke-1 -->
+                                <div class="flex items-center gap-12 px-6">
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-orange-500 cursor-default">HTML5</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-blue-500 cursor-default">CSS3</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-yellow-400 cursor-default">JavaScript</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-cyan-400 cursor-default">Tailwind</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-red-500 cursor-default">Laravel</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-green-500 cursor-default">Node.js</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-indigo-500 cursor-default">PHP</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-blue-400 cursor-default">MySQL</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-orange-600 cursor-default">Git</span>
+                                </div>
+                                
+                                <!-- Set ke-2 (Duplikat persis dari Set ke-1 untuk kelancaran loop) -->
+                                <div class="flex items-center gap-12 px-6">
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-orange-500 cursor-default">HTML5</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-blue-500 cursor-default">CSS3</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-yellow-400 cursor-default">JavaScript</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-cyan-400 cursor-default">Tailwind</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-red-500 cursor-default">Laravel</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-green-500 cursor-default">Node.js</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-indigo-500 cursor-default">PHP</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-blue-400 cursor-default">MySQL</span>
+                                    <span class="flex items-center gap-2 text-xl font-display font-bold text-orange-600 cursor-default">Git</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Box 4: Location/Time -->
+                    <div class="reveal rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/50 p-8 flex flex-col justify-between hover:shadow-xl transition-shadow relative">
+                        <div class="absolute top-6 right-6 w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                        <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-2">Lokasi</h3>
+                        <p class="text-2xl font-display font-bold text-zinc-900 dark:text-white mb-1">Bekasi, ID</p>
+                        <p class="text-zinc-500 font-mono text-sm" id="currentTime">WIB</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section (High-End Gallery) -->
+        <section id="projects" class="py-24 px-6 relative bg-zinc-100 dark:bg-zinc-950/50 border-y border-zinc-200/50 dark:border-zinc-900">
+            <div class="max-w-6xl mx-auto">
+                <div class="reveal flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
+                    <div>
+                        <h2 class="font-display text-3xl md:text-5xl font-bold text-zinc-900 dark:text-white mb-4">Karya Terpilih</h2>
+                        <p class="text-zinc-500 dark:text-zinc-400 max-w-md">Kumpulan proyek yang mendemonstrasikan keahlian teknis dan perhatian terhadap detail desain.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Project Card 1 -->
+                    <div class="reveal group relative overflow-hidden rounded-[2rem] bg-zinc-200 dark:bg-zinc-900 aspect-[4/3] md:aspect-square lg:aspect-[4/3]">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?fit=crop&w=800&q=80" alt="E-Commerce" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-80"></div>
+                        
+                        <!-- Content Overlay -->
+                        <div class="absolute inset-0 p-8 md:p-10 flex flex-col justify-end transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                            <div class="flex gap-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                                <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-semibold">E-Commerce</span>
+                                <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-semibold">PHP</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-display font-bold text-white mb-2">Modern Storefront</h3>
+                            <p class="text-zinc-300 text-sm md:text-base line-clamp-2 mb-6">Sistem toko online responsif dengan checkout dinamis dan panel manajemen admin yang komprehensif.</p>
+                            
+                            <a href="#" class="inline-flex items-center gap-2 text-white font-medium hover:text-accent-400 transition-colors">
+                                Lihat Detail <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Project Card 2 -->
+                    <div class="reveal group relative overflow-hidden rounded-[2rem] bg-zinc-200 dark:bg-zinc-900 aspect-[4/3] md:aspect-square lg:aspect-[4/3] md:translate-y-12">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?fit=crop&w=800&q=80" alt="Dashboard" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-80"></div>
+                        
+                        <div class="absolute inset-0 p-8 md:p-10 flex flex-col justify-end transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                            <div class="flex gap-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                                <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-semibold">Dashboard</span>
+                                <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-semibold">JS</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-display font-bold text-white mb-2">Analytics Data UX</h3>
+                            <p class="text-zinc-300 text-sm md:text-base line-clamp-2 mb-6">Antarmuka dashboard analitik bersih untuk memantau performa, dilengkapi diagram interaktif.</p>
+                            
+                            <a href="#" class="inline-flex items-center gap-2 text-white font-medium hover:text-accent-400 transition-colors">
+                                Lihat Detail <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Project Card 3 -->
+                    <div class="reveal group relative overflow-hidden rounded-[2rem] bg-zinc-200 dark:bg-zinc-900 aspect-[4/3] md:aspect-square lg:aspect-[4/3]">
+                        <img src="https://images.unsplash.com/photo-1522542550221-31fd19575a2d?fit=crop&w=800&q=80" alt="StartUp Profile" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-80"></div>
+                        
+                        <div class="absolute inset-0 p-8 md:p-10 flex flex-col justify-end transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                            <div class="flex gap-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                                <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-semibold">Web Design</span>
+                                <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-semibold">Tailwind</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-display font-bold text-white mb-2">StartUp Landing Page</h3>
+                            <p class="text-zinc-300 text-sm md:text-base line-clamp-2 mb-6">Desain profile untuk startup teknologi yang menonjolkan tipografi mencolok dan animasi transisi.</p>
+                            
+                            <a href="#" class="inline-flex items-center gap-2 text-white font-medium hover:text-accent-400 transition-colors">
+                                Lihat Detail <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                     <!-- Custom Project Card / CTA -->
+                    <div class="reveal rounded-[2rem] border border-dashed border-zinc-300 dark:border-zinc-800 p-10 flex flex-col justify-center items-center text-center hover:bg-zinc-100 dark:hover:bg-zinc-900/50 transition-colors md:translate-y-12">
+                        <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-display font-bold text-zinc-900 dark:text-white mb-2">Proyek Anda Selanjutnya?</h3>
+                        <p class="text-zinc-500 mb-6">Mari berkolaborasi untuk menciptakan sesuatu yang luar biasa.</p>
+                        <a href="#contact" class="px-6 py-3 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium hover:scale-105 transition-transform">Mulai Diskusi</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Client Reviews Section -->
+        <section id="reviews" class="py-24 px-6 relative overflow-hidden">
+            <!-- Dekorasi Background Latar Belakang -->
+            <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-accent-500/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+            
+            <div class="max-w-7xl mx-auto">
+                <div class="reveal text-center mb-16 max-w-2xl mx-auto">
+                    <h2 class="font-display text-3xl md:text-5xl font-bold text-zinc-900 dark:text-white mb-4">Suara Mereka.</h2>
+                    <p class="text-zinc-500 dark:text-zinc-400">Apa yang dikatakan oleh para klien yang telah berkolaborasi dengan saya dalam membangun solusi digital mereka.</p>
+                </div>
+
+                <!-- Wrapper Carousel -->
+                <div class="relative reveal group/carousel">
+                    
+                    <!-- Tombol Navigasi Kiri (Muncul saat hover di Desktop) -->
+                    <button id="prev-review" class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 w-12 h-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full items-center justify-center text-zinc-900 dark:text-white shadow-xl opacity-0 group-hover/carousel:opacity-100 hover:scale-110 hover:text-accent-500 transition-all duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+
+                    <!-- Tombol Navigasi Kanan -->
+                    <button id="next-review" class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 w-12 h-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full items-center justify-center text-zinc-900 dark:text-white shadow-xl opacity-0 group-hover/carousel:opacity-100 hover:scale-110 hover:text-accent-500 transition-all duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+
+                    <!-- Slider Container -->
+                    <!-- Menggunakan flex overflow, snap-x, dan menghilangkan scrollbar bawaan -->
+                    <div id="review-track" class="flex gap-6 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 pt-4 px-4 -mx-4 items-stretch">
+                        
+                        <!-- Review 1 -->
+                        <div class="w-[85vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 snap-center relative p-8 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/50 hover:shadow-2xl hover:shadow-accent-500/10 transition-all duration-300 hover:-translate-y-2 flex flex-col">
+                            <div class="absolute top-8 right-8 text-zinc-100 dark:text-zinc-800/50">
+                                <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+                            </div>
+                            
+                            <!-- Rating Bintang -->
+                            <div class="flex gap-1 mb-6 text-yellow-400">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            </div>
+
+                            <p class="text-zinc-600 dark:text-zinc-300 mb-8 leading-relaxed relative z-10 text-sm md:text-base flex-grow">
+                                "Luar biasa! Hari benar-benar mengerti apa yang kami butuhkan untuk startup kami. Website yang dibangun tidak hanya cepat, tetapi struktur backend-nya sangat rapi. Sangat merekomendasikan jasanya!"
+                            </p>
+
+                            <div class="flex items-center gap-4 mt-auto">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?fit=crop&w=100&h=100&q=80" alt="Budi Santoso" class="w-12 h-12 rounded-full object-cover">
+                                <div>
+                                    <h4 class="font-display font-bold text-zinc-900 dark:text-white">Budi Santoso</h4>
+                                    <p class="text-xs text-zinc-500">CEO, TechNusa</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Review 2 -->
+                        <div class="w-[85vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 snap-center relative p-8 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/50 hover:shadow-2xl hover:shadow-accent-500/10 transition-all duration-300 hover:-translate-y-2 flex flex-col">
+                            <div class="absolute top-8 right-8 text-zinc-100 dark:text-zinc-800/50">
+                                <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+                            </div>
+                            
+                            <div class="flex gap-1 mb-6 text-yellow-400">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            </div>
+
+                            <p class="text-zinc-600 dark:text-zinc-300 mb-8 leading-relaxed relative z-10 text-sm md:text-base flex-grow">
+                                "Sebagai Full Stack Developer, Hari mampu menangani masalah integrasi payment gateway yang kompleks di website kami dengan sangat cepat. Hasilnya memuaskan dan minim bug."
+                            </p>
+
+                            <div class="flex items-center gap-4 mt-auto">
+                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?fit=crop&w=100&h=100&q=80" alt="Andi Wijaya" class="w-12 h-12 rounded-full object-cover">
+                                <div>
+                                    <h4 class="font-display font-bold text-zinc-900 dark:text-white">Andi Wijaya</h4>
+                                    <p class="text-xs text-zinc-500">Direktur, Retail Indo Utama</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Review 4 (Tambahan untuk efek geser) -->
+                        <div class="w-[85vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 snap-center relative p-8 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/50 hover:shadow-2xl hover:shadow-accent-500/10 transition-all duration-300 hover:-translate-y-2 flex flex-col">
+                            <div class="absolute top-8 right-8 text-zinc-100 dark:text-zinc-800/50">
+                                <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+                            </div>
+                            <div class="flex gap-1 mb-6 text-yellow-400">
+                                <!-- 5 bintang -->
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            </div>
+                            <p class="text-zinc-600 dark:text-zinc-300 mb-8 leading-relaxed relative z-10 text-sm md:text-base flex-grow">
+                                "Sangat profesional. Website portofolio perusahaan kami kini tampil 10x lipat lebih elegan berkat sentuhan magis animasi frontend yang beliau buat. Mantap!"
+                            </p>
+                            <div class="flex items-center gap-4 mt-auto">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=100&h=100&q=80" alt="Kevin Wijaya" class="w-12 h-12 rounded-full object-cover">
+                                <div>
+                                    <h4 class="font-display font-bold text-zinc-900 dark:text-white">Kevin Pratama</h4>
+                                    <p class="text-xs text-zinc-500">Creative Director</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modern Contact Section with WhatsApp Form -->
+        <section id="contact" class="py-32 px-6 relative">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    
+                    <!-- Kolom Kiri: Teks & Info -->
+                    <div class="text-center lg:text-left">
+                        <h2 class="reveal font-display text-4xl md:text-5xl lg:text-6xl font-bold text-zinc-900 dark:text-white tracking-tight mb-6">
+                            Mari ciptakan sesuatu <br class="hidden lg:block"> yang <span class="italic font-normal text-zinc-500">berarti.</span>
+                        </h2>
+                        
+                        <p class="reveal text-lg text-zinc-500 dark:text-zinc-400 mb-12 max-w-lg mx-auto lg:mx-0">
+                            Punya ide proyek, peluang kolaborasi, atau sekadar ingin menyapa? Isi formulir di samping atau hubungi saya langsung melalui email.
+                        </p>
+
+                        <div class="reveal mb-12">
+                            <a href="mailto:hello@satpadev.com" class="inline-block relative group">
+                                <span class="font-display font-bold text-2xl md:text-3xl text-zinc-900 dark:text-white border-b-2 border-transparent group-hover:border-accent-500 transition-colors pb-1">hello@satpadev.com</span>
+                                <svg class="absolute -right-8 -top-2 w-6 h-6 text-accent-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 group-hover:-translate-y-2 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </a>
+                        </div>
+
+                        <div class="reveal flex justify-center lg:justify-start gap-6 border-t border-zinc-200 dark:border-zinc-800 pt-8">
+                            <a href="#" class="text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-medium transition-colors">GitHub</a>
+                            <a href="#" class="text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-medium transition-colors">LinkedIn</a>
+                            <a href="#" class="text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-medium transition-colors">Instagram</a>
+                        </div>
+                    </div>
+
+                    <!-- Kolom Kanan: Form WhatsApp -->
+                    <div class="reveal relative">
+                        <!-- Efek cahaya di belakang form -->
+                        <div class="absolute -top-10 -right-10 w-64 h-64 bg-accent-500/20 rounded-full blur-3xl -z-10"></div>
+                        <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl -z-10"></div>
+                        
+                        <div class="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-8 md:p-10 shadow-2xl">
+                            <form id="waForm" onsubmit="sendToWhatsApp(event)" class="space-y-6">
+                                <div>
+                                    <label for="waName" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Nama Anda</label>
+                                    <input type="text" id="waName" placeholder="Masukan Nama Anda" required class="w-full bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3.5 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-accent-500 transition-all">
+                                </div>
+                                <div>
+                                    <label for="waSubject" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Subjek / Kebutuhan</label>
+                                    <input type="text" id="waSubject" placeholder="Contoh Pembuatan Website Company Profile" required class="w-full bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3.5 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-accent-500 transition-all">
+                                </div>
+                                <div>
+                                    <label for="waMessage" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Pesan</label>
+                                    <textarea id="waMessage" rows="4" placeholder="Ceritakan detail proyek atau pertanyaan Anda..." required class="w-full bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3.5 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-accent-500 transition-all resize-none"></textarea>
+                                </div>
+                                <button type="submit" class="w-full px-8 py-4 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 group">
+                                    Kirim ke WhatsApp
+                                    <!-- Ikon WhatsApp -->
+                                    <svg class="w-6 h-6 text-emerald-500 group-hover:text-emerald-400 transition-colors" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-8 text-center text-zinc-500 text-sm relative z-10 bg-zinc-50 dark:bg-zinc-950">
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> Hari Satpa Meila. All rights reserved.</p>
+    </footer>
+
+    <!-- Core App Logic -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // 1. Inisialisasi Scroll Reveal LANGSUNG BEKERJA (Bug Fix: Tidak lagi ditunda)
+            const revealElements = document.querySelectorAll('.reveal');
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // Berhenti memantau elemen yang sudah muncul
+                        observer.unobserve(entry.target); 
+                    }
+                });
+            }, {
+                threshold: 0.1, 
+                rootMargin: "0px 0px -50px 0px"
+            });
+
+            revealElements.forEach(el => revealObserver.observe(el));
+
+            // 2. Preloader Logic (Dioptimalkan agar lebih responsif)
+            const preloader = document.getElementById('preloader');
+            
+            // Hilangkan preloader segera setelah seluruh elemen halaman siap (ter-load)
+            window.addEventListener('load', () => {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 700); 
+            });
+            
+            // Fallback: Jika koneksi lambat, paksa preloader hilang setelah 1 detik
+            setTimeout(() => {
+                if(preloader.style.display !== 'none') {
+                    preloader.style.opacity = '0';
+                    setTimeout(() => preloader.style.display = 'none', 700);
+                }
+            }, 1000);
+
+            // 3. Dark Mode Logic
+            const html = document.documentElement;
+            const themeToggleBtn = document.getElementById('themeToggle');
+            
+            function updateTheme(isDark) {
+                if (isDark) {
+                    html.classList.add('dark');
+                    localStorage.theme = 'dark';
+                } else {
+                    html.classList.remove('dark');
+                    localStorage.theme = 'light';
+                }
+            }
+
+            // Init Theme
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                updateTheme(true);
+            } else {
+                updateTheme(false); // Memaksa light jika belum diset ke dark
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                updateTheme(!html.classList.contains('dark'));
+            });
+
+            // 3. Mobile Menu Logic
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const closeMenuBtn = document.getElementById('closeMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileLinks = document.querySelectorAll('.mobile-link');
+
+            function toggleMobileMenu() {
+                const isClosed = mobileMenu.classList.contains('opacity-0');
+                if(isClosed) {
+                    mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
+                } else {
+                    mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+                }
+            }
+
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            closeMenuBtn.addEventListener('click', toggleMobileMenu);
+            mobileLinks.forEach(link => link.addEventListener('click', toggleMobileMenu));
+
+            // 5. Active Nav Link Tracking (Intersection Observer)
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        let id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, {
+                threshold: 0.3 // Trigger active state when section is 30% visible
+            });
+
+            sections.forEach(sec => sectionObserver.observe(sec));
+
+            // 6. Live Clock (For Bento UI Location Card)
+            function updateClock() {
+                const now = new Date();
+                let timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                document.getElementById('currentTime').textContent = `${timeString} WIB`;
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
+
+            // 7. Typing Effect (High-End Style)
+            const typingElement = document.querySelector('.typing-text');
+            // Kata sedikit disesuaikan agar tidak terlalu panjang yang memicu overflow
+            const wordsToType = ['Aplikasi Website.', 'Sistem Digital.', 'Solusi Full Stack.'];
+            let wordIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+
+            function typeWords() {
+                if(!typingElement) return;
+
+                const currentWord = wordsToType[wordIndex];
+                
+                if (isDeleting) {
+                    typingElement.textContent = currentWord.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    typingElement.textContent = currentWord.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+
+                // Kecepatan mengetik dibuat lebih natural
+                let typingSpeed = isDeleting ? 30 : 80;
+
+                if (!isDeleting && charIndex === currentWord.length) {
+                    typingSpeed = 2500; // Jeda saat kata selesai diketik (lebih lama agar bisa dibaca)
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    wordIndex = (wordIndex + 1) % wordsToType.length;
+                    typingSpeed = 400; // Jeda sebelum mulai mengetik kata baru
+                }
+
+                setTimeout(typeWords, typingSpeed);
+            }
+            
+            setTimeout(typeWords, 1200); // Mulai efek setelah preloader selesai (1.2 detik)
+        });
+
+        // 8. Integrasi Form WhatsApp
+        function sendToWhatsApp(event) {
+            event.preventDefault(); // Mencegah form melakukan refresh halaman
+            
+            // GANTI DENGAN NOMOR WHATSAPP ANDA (Gunakan kode negara tanpa tanda '+')
+            // Contoh: 6281234567890
+            const phoneNumber = "6281234567890"; 
+            
+            // Mengambil nilai dari input form
+            const name = document.getElementById('waName').value;
+            const subject = document.getElementById('waSubject').value;
+            const message = document.getElementById('waMessage').value;
+            
+            // Menyusun format pesan WhatsApp
+            const textMessage = `Halo Hari Satpa Meila,\n\nPerkenalkan, nama saya *${name}*.\nSaya menghubungi Anda terkait: *${subject}*.\n\n*Pesan:*\n${message}`;
+            
+            // Melakukan encode teks agar sesuai dengan format URL
+            const encodedMessage = encodeURIComponent(textMessage);
+            
+            // Membuat link API WhatsApp
+            const waLink = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            
+            // Membuka link di tab baru
+            window.open(waLink, '_blank');
+        }
+
+        // 9. Review Carousel Logic
+        const track = document.getElementById('review-track');
+        const prevBtn = document.getElementById('prev-review');
+        const nextBtn = document.getElementById('next-review');
+
+        if (track && prevBtn && nextBtn) {
+            // Hitung lebar scroll berdasarkan lebar satu kartu (termasuk gap)
+            const getScrollAmount = () => {
+                const firstCard = track.querySelector('div');
+                return firstCard.offsetWidth + 24; // 24px = gap-6
+            };
+
+            nextBtn.addEventListener('click', () => {
+                track.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+            });
+
+            prevBtn.addEventListener('click', () => {
+                track.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+            });
+        }
+    </script>
+</body>
+</html>

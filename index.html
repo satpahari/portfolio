@@ -135,7 +135,11 @@
         }
     </style>
 </head>
-<body class="bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 transition-colors duration-500 font-sans selection:bg-accent-500 selection:text-white">
+<!-- Tambahan overflow-x-hidden pada body -->
+<body class="bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 transition-colors duration-500 font-sans selection:bg-accent-500 selection:text-white overflow-x-hidden">
+
+    <!-- Wrapper Utama Pembatas Layar: Memaksa mutlak agar tidak ada elemen yang melebar keluar (Fix Horizontal Scroll Mobile) -->
+    <div class="w-full overflow-x-hidden relative flex flex-col min-h-screen">
 
     <!-- Preloader (SPA Feel) -->
     <div id="preloader" class="fixed inset-0 z-[100] bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center transition-opacity duration-700">
@@ -207,10 +211,11 @@
                         <span class="text-xs font-medium text-zinc-600 dark:text-zinc-300 uppercase tracking-wider">Tersedia untuk Pekerjaan</span>
                     </div>
                     
-                    <!-- Menyesuaikan ukuran teks typografi dan memberi padding-bottom (pb-2) agar huruf bawah tidak terpotong -->
-                    <h1 class="reveal font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-zinc-900 dark:text-white leading-[1.1] mb-6 min-h-[110px] sm:min-h-[130px] md:min-h-[150px] lg:min-h-[170px] w-full">
+                    <!-- Ukuran teks mobile diperbesar kustom: Membangun (3.25rem), Typing (2.5rem) -->
+                    <!-- min-h disesuaikan agar ruang tetap seimbang dan teks tidak terpotong ke bawah saat mengetik -->
+                    <h1 class="reveal font-display text-[3.25rem] sm:text-6xl md:text-6xl lg:text-7xl font-bold tracking-tight text-zinc-900 dark:text-white leading-[1.05] mb-6 min-h-[145px] sm:min-h-[150px] md:min-h-[160px] lg:min-h-[180px] w-full">
                         Membangun <br>
-                        <span class="inline-block mt-3 pb-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-gradient typing-text heartbeat-cursor"></span>
+                        <span class="inline-block mt-3 pb-2 text-[2.5rem] sm:text-5xl md:text-5xl lg:text-6xl text-gradient typing-text heartbeat-cursor"></span>
                     </h1>
                     
                     <p class="reveal text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-xl mb-10 leading-relaxed">
@@ -616,9 +621,11 @@
     </main>
 
     <!-- Footer -->
-    <footer class="py-8 text-center text-zinc-500 text-sm relative z-10 bg-zinc-50 dark:bg-zinc-950">
+    <footer class="py-8 text-center text-zinc-500 text-sm relative z-10 bg-zinc-50 dark:bg-zinc-950 mt-auto">
         <p>&copy; <script>document.write(new Date().getFullYear())</script> Hari Satpa Meila. All rights reserved.</p>
     </footer>
+
+    </div> <!-- Tutup Wrapper Utama -->
 
     <!-- Core App Logic -->
     <script>
